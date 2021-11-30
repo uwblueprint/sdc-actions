@@ -23,17 +23,17 @@ name: check-files-changed
 on: [pull_request]
 
 jobs:
-    job1:
-        runs-on: ubuntu-latest
-        steps:
-            - name: Check files changed
-              id: changed-terraform
-              uses: uwblueprint/sdc-actions/actions/check-files-changed@main
-              with:
-                  branch: $GITHUB_BASE_REF
-                  expression: "terraform/*"
+  job1:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check files changed
+        id: changed-terraform
+        uses: uwblueprint/sdc-actions/actions/check-files-changed@main
+        with:
+          branch: $GITHUB_BASE_REF
+          expression: "terraform/*"
 
-            - name: Terraform changed
-              if: steps.changed-terraform.outputs.changed == 'true'
-              run: echo terraform files changed
+      - name: Terraform changed
+        if: steps.changed-terraform.outputs.changed == 'true'
+        run: echo terraform files changed
 ```
