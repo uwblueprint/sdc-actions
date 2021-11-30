@@ -22,10 +22,12 @@ runs:
       uses: actions/checkout@v2
 
     - name: Fetch target pr branch for diff
+      shell: bash
       run: git fetch origin ${{inputs.branch}}:refs/remotes/origin/${{inputs.branch}}
-
+      
     - name: Check modified files
       id: files-changed
+      shell: bash
       run: |
           echo List modified files
           git diff --name-only --diff-filter=d origin/${{inputs.branch}} HEAD
