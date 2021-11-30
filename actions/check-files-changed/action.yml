@@ -7,7 +7,7 @@ inputs:
     description: "Target branch to compare to"
     required: true
     type: string
-  expression:
+  regex:
     description: "Regex to compare to"
     required: true
     type: string
@@ -38,8 +38,8 @@ runs:
           while IFS= read -r file
           do
               echo $file
-              if [[ $file == ${{inputs.expression}} ]]; then
-              echo Change found for $${inputs.expression}
+              if [[ $file == ${{inputs.regex}} ]]; then
+              echo Change found for $${inputs.regex}
               echo "::set-output name=changed::true"
               break
               fi
