@@ -29,7 +29,7 @@ runs:
       id: files-changed
       shell: bash
       run: |
-          echo List modified files:
+          echo Listing modified files:
           git diff --name-only --diff-filter=d origin/${{inputs.branch}} HEAD
 
           echo "::set-output name=changed::false"
@@ -39,7 +39,7 @@ runs:
           do
               echo $file
               if [[ $file == ${{inputs.regex}} ]]; then
-              echo Change found for ${{inputs.regex}}
+              echo Change found!
               echo "::set-output name=changed::true"
               break
               fi
