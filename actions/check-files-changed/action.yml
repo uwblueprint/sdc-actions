@@ -39,7 +39,7 @@ runs:
           do
               echo $file
               if [[ $file == ${{inputs.regex}} ]]; then
-              echo Change found for $${inputs.regex}
+              echo Change found for ${inputs.regex}
               echo "::set-output name=changed::true"
               break
               fi
