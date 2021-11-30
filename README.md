@@ -1,6 +1,6 @@
 # sdc-actions
 
-Centralized repo for Github Actions using in SDC's CI/CD pipeline 
+Centralized repo for Github Actions used in SDC's CI/CD pipeline 
 
 ## Actions
 
