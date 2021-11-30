@@ -1,0 +1,44 @@
+# TODO
+# optional fetch depth and commit to commit comparison
+name: "Check files changed"
+description: "Lists changed files by comparing commit to target branch and returns Boolean if files match a regex"
+inputs:
+  branch:
+    description: "Target branch to compare to"
+    required: true
+    type: string
+  expression:
+    description: "Regex to compare to"
+    required: true
+    type: string
+outputs:
+  changed: 
+    description: "Boolean if a changed file matches the regex"
+    value: ${{steps.files-changed.outputs.changed}}
+runs: 
+  using: "composite"
+  steps:
+    - name: Checkout the commit
+      uses: actions/checkout@v2
+
+    - name: Fetch target pr branch for diff
+      run: git fetch origin ${{inputs.branch}}:refs/remotes/origin/${{inputs.branch}}
+
+    - name: Check modified files
+      id: files-changed
+      run: |
+          echo List modified files
+          git diff --name-only --diff-filter=d origin/${{inputs.branch}} HEAD
+
+          echo "::set-output name=changed::false"
+          git diff --name-only --diff-filter=d origin/${{inputs.branch}} HEAD > files.txt
+
+          while IFS= read -r file
+          do
+              echo $file
+              if [[ $file == ${{inputs.expression}} ]]; then
+              echo Change found for $${inputs.expression}
+              echo "::set-output name=changed::true"
+              break
+              fi
+          done < files.txt
