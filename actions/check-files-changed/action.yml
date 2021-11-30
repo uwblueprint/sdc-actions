@@ -29,7 +29,7 @@ runs:
       id: files-changed
       shell: bash
       run: |
-          echo List modified files
+          echo List modified files:
           git diff --name-only --diff-filter=d origin/${{inputs.branch}} HEAD
 
           echo "::set-output name=changed::false"
