@@ -34,6 +34,6 @@ jobs:
                   expression: "terraform/*"
 
             - name: Terraform changed
-              if: steps.changed-terraform.outputs.changed == "true"
+              if: steps.changed-terraform.outputs.changed == 'true'
               run: echo terraform files changed
 ```
