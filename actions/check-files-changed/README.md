@@ -1,6 +1,6 @@
 # `check-files-changed`
 
-This action lists changed files by comparing commit to target branch and returns a string Boolean if a changed file matches an input regex
+This action lists changed files by comparing a commit/branch to target branch and returns a string Boolean if a changed file matches an input regex
 
 ## Input
 
