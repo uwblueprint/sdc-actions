@@ -10,4 +10,4 @@ Centralized repo for Github Actions used in SDC's CI/CD pipeline
 
 ## TODO
 
-* CI for this repo!
+* CI/CD for this repo!
