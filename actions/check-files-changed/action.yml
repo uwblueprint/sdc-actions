@@ -30,10 +30,10 @@ runs:
       shell: bash
       run: |
           echo Listing modified files:
-          git diff --name-only --diff-filter=d origin/${{inputs.branch}} HEAD
+          git diff --name-only origin/${{inputs.branch}} HEAD
 
           echo "::set-output name=changed::false"
-          git diff --name-only --diff-filter=d origin/${{inputs.branch}} HEAD > files.txt
+          git diff --name-only origin/${{inputs.branch}} HEAD > files.txt
 
           while IFS= read -r file
           do
