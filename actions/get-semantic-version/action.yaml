@@ -1,0 +1,18 @@
+name: Get Semantic Version 
+description: Github Action to get next semantic version based on latest tag and version bump info
+author: uwblueprint
+inputs:
+  bump:
+    description: Semantic bump type of 'Major', 'Minor', or 'Patch'
+    required: true
+  token:
+    description: GitHub token for GitHub API requests. Users shouldn't need to set this themselves.
+    required: true
+    default: ${{ github.token }}
+outputs:
+  version:
+    description: >
+      String boolean ('true', 'false') whether the regular expression matches a value in the inputs
+runs:
+  using: node16
+  main: dist/index.js
