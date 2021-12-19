@@ -59,14 +59,16 @@ const run = () => __awaiter(void 0, void 0, void 0, function* () {
         event returned ${response.status}, expected 200`);
         }
         const tagsArray = response.data;
-        const tagsParsed = tagsArray
+        const tags = tagsArray
             .map((tag) => tag.name)
             .map((tagName) => semver_1.default.clean(tagName))
             .map((version) => semver_1.default.parse(version, { loose: true }));
+        core.info(`${tags}`);
         // would rather have a .filter after above like .filter((version) => version !== null) but typescript doesn't understand this
         // so we have to create a typeguard I believe https://stackoverflow.com/questions/64480140/typescript-filter-showing-error-is-not-assignable-to-type
-        const tags = filterSemVer(tagsParsed).sort(semver_1.default.rcompare);
-        core.info(`${tags}`);
+        const versions = filterSemVer(tags).sort(semver_1.default.rcompare);
+        const newVersion = versions[0] || semver_1.default.parse("0.0.0");
+        core.info(newVersion.toString());
     }
     catch (e) {
         core.setFailed(e.message);

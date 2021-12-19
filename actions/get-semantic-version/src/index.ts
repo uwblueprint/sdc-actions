@@ -26,16 +26,17 @@ const run = async () => {
     }
 
     const tagsArray = response.data;
-    const tagsParsed = tagsArray
+    const tags = tagsArray
       .map((tag) => tag.name)
       .map((tagName) => semver.clean(tagName))
       .map((version) => semver.parse(version, { loose: true }));
+    core.info(`${tags}`);
 
     // would rather have a .filter after above like .filter((version) => version !== null) but typescript doesn't understand this
     // so we have to create a typeguard I believe https://stackoverflow.com/questions/64480140/typescript-filter-showing-error-is-not-assignable-to-type
-    const tags = filterSemVer(tagsParsed).sort(semver.rcompare);
-
-    core.info(`${tags}`);
+    const versions = filterSemVer(tags).sort(semver.rcompare);
+    const newVersion = versions[0] || semver.parse("0.0.0");
+    core.info(newVersion.toString());
   } catch (e) {
     core.setFailed(e.message);
   }
