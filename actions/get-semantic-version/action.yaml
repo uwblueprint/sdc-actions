@@ -3,7 +3,7 @@ description: Github Action to get next semantic version based on latest tag and 
 author: uwblueprint
 inputs:
   bump:
-    description: Semantic bump type of 'Major', 'Minor', or 'Patch'
+    description: The type of semantic version increment to make (one of major, premajor, minor, preminor, patch, prepatch, or prerelease)
     required: true
   token:
     description: GitHub token for GitHub API requests. Users shouldn't need to set this themselves.
@@ -11,8 +11,7 @@ inputs:
     default: ${{ github.token }}
 outputs:
   version:
-    description: >
-      String boolean ('true', 'false') whether the regular expression matches a value in the inputs
+    description: Incremented semantic version
 runs:
   using: node16
   main: dist/index.js

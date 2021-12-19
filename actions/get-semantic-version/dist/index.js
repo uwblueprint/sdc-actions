@@ -49,7 +49,7 @@ const run = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // Create GitHub client with the API token.
         const octokit = (0, github_1.getOctokit)(core.getInput("token", { required: true }));
-        const format = core.getInput("bump", { required: true });
+        const bump = core.getInput("bump", { required: true });
         const response = yield octokit.rest.repos.listTags({
             owner: github_1.context.repo.owner,
             repo: github_1.context.repo.repo,
@@ -63,12 +63,17 @@ const run = () => __awaiter(void 0, void 0, void 0, function* () {
             .map((tag) => tag.name)
             .map((tagName) => semver_1.default.clean(tagName))
             .map((version) => semver_1.default.parse(version, { loose: true }));
-        core.info(`${tags}`);
         // would rather have a .filter after above like .filter((version) => version !== null) but typescript doesn't understand this
         // so we have to create a typeguard I believe https://stackoverflow.com/questions/64480140/typescript-filter-showing-error-is-not-assignable-to-type
         const versions = filterSemVer(tags).sort(semver_1.default.rcompare);
-        const newVersion = versions[0] || semver_1.default.parse("0.0.0");
-        core.info(newVersion.toString());
+        core.info(`Versions: ${versions}`);
+        const latestVersion = versions[0] || semver_1.default.parse("0.0.0");
+        const newVersion = semver_1.default.inc(latestVersion, bump);
+        if (newVersion === null) {
+            core.setFailed(`Incremeting latest version ${latestVersion} by ${bump} failed. Check if latest version is correct and bump is valid. Otherwise there is likely an error with the semver package`);
+        }
+        core.info(`New Version: ${newVersion}`);
+        core.setOutput("version", newVersion);
     }
     catch (e) {
         core.setFailed(e.message);

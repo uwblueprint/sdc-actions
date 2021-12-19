@@ -12,7 +12,7 @@ const run = async () => {
   try {
     // Create GitHub client with the API token.
     const octokit = getOctokit(core.getInput("token", { required: true }));
-    const format = core.getInput("bump", { required: true });
+    const bump = core.getInput("bump", { required: true });
     const response = await octokit.rest.repos.listTags({
       owner: context.repo.owner,
       repo: context.repo.repo,
@@ -30,13 +30,20 @@ const run = async () => {
       .map((tag) => tag.name)
       .map((tagName) => semver.clean(tagName))
       .map((version) => semver.parse(version, { loose: true }));
-    core.info(`${tags}`);
 
     // would rather have a .filter after above like .filter((version) => version !== null) but typescript doesn't understand this
     // so we have to create a typeguard I believe https://stackoverflow.com/questions/64480140/typescript-filter-showing-error-is-not-assignable-to-type
     const versions = filterSemVer(tags).sort(semver.rcompare);
-    const newVersion = versions[0] || semver.parse("0.0.0");
-    core.info(newVersion.toString());
+    core.info(`Versions: ${versions}`);
+    const latestVersion = versions[0] || semver.parse("0.0.0");
+    const newVersion = semver.inc(latestVersion, bump as semver.ReleaseType);
+    if (newVersion === null) {
+      core.setFailed(
+        `Incremeting latest version ${latestVersion} by ${bump} failed. Check if latest version is correct and bump is valid. Otherwise there is likely an error with the semver package`,
+      );
+    }
+    core.info(`New Version: ${newVersion}`);
+    core.setOutput("version", newVersion);
   } catch (e) {
     core.setFailed(e.message);
   }
