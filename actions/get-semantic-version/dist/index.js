@@ -41,9 +41,9 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
 const github_1 = __nccwpck_require__(5438);
 const semver_1 = __importDefault(__nccwpck_require__(1383));
-const isSemVer = (person) => person !== null;
-function filterSemVer(persons) {
-    return persons.filter(isSemVer);
+const isSemVer = (version) => version !== null;
+function filterSemVer(versions) {
+    return versions.filter(isSemVer);
 }
 const run = () => __awaiter(void 0, void 0, void 0, function* () {
     try {

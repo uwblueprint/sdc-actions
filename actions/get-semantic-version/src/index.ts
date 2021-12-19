@@ -2,10 +2,10 @@ import * as core from "@actions/core";
 import { context, getOctokit } from "@actions/github";
 import semver from "semver";
 
-const isSemVer = (person: semver.SemVer | null): person is semver.SemVer => person !== null;
+const isSemVer = (version: semver.SemVer | null): version is semver.SemVer => version !== null;
 
-function filterSemVer(persons: Array<semver.SemVer | null>): Array<semver.SemVer> {
-  return persons.filter(isSemVer);
+function filterSemVer(versions: Array<semver.SemVer | null>): Array<semver.SemVer> {
+  return versions.filter(isSemVer);
 }
 
 const run = async () => {
