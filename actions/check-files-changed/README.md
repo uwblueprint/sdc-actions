@@ -1,6 +1,6 @@
 # `check-files-changed`
 
-This action lists changed files by comparing commit to target branch and returns Boolean if files match a regex
+This action lists changed files by comparing a commit/branch to a target branch and returns a string Boolean if a changed file matches an input regex
 
 ## Input
 
@@ -23,17 +23,17 @@ name: check-files-changed
 on: [pull_request]
 
 jobs:
-    job1:
-        runs-on: ubuntu-latest
-        steps:
-            - name: Check files changed
-              id: changed-terraform
-              uses: uwblueprint/sdc-actions/actions/check-files-changed@main
-              with:
-                  branch: $GITHUB_BASE_REF
-                  expression: "terraform/*"
+  job1:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check files changed
+        id: changed-terraform
+        uses: uwblueprint/sdc-actions/actions/check-files-changed@main
+        with:
+          branch: $GITHUB_BASE_REF
+          expression: "terraform/*"
 
-            - name: Terraform changed
-              if: steps.changed-terraform.outputs.changed == "true"
-              run: echo terraform files changed
+      - name: Terraform changed
+        if: steps.changed-terraform.outputs.changed == 'true'
+        run: echo terraform files changed
 ```

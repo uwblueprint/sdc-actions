@@ -7,7 +7,7 @@ inputs:
     description: "Target branch to compare to"
     required: true
     type: string
-  expression:
+  regex:
     description: "Regex to compare to"
     required: true
     type: string
@@ -29,17 +29,17 @@ runs:
       id: files-changed
       shell: bash
       run: |
-          echo List modified files:
-          git diff --name-only --diff-filter=d origin/${{inputs.branch}} HEAD
+          echo Listing modified files:
+          git diff --name-only origin/${{inputs.branch}} HEAD
 
           echo "::set-output name=changed::false"
-          git diff --name-only --diff-filter=d origin/${{inputs.branch}} HEAD > files.txt
+          git diff --name-only origin/${{inputs.branch}} HEAD > files.txt
 
           while IFS= read -r file
           do
               echo $file
-              if [[ $file == ${{inputs.expression}} ]]; then
-              echo Change found for $${inputs.expression}
+              if [[ $file == ${{inputs.regex}} ]]; then
+              echo Change found!
               echo "::set-output name=changed::true"
               break
               fi
