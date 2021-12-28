@@ -70,6 +70,7 @@ const run = () => __awaiter(void 0, void 0, void 0, function* () {
                 core.setFailed(e.message);
             }
         }
+        core.info(assignees.length.toString());
         core.info(assignees.toString());
         // if (assignees.length > 0) {
         //   core.info(assignees.toString());

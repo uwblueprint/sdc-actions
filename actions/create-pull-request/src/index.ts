@@ -34,6 +34,7 @@ const run = async () => {
         core.setFailed(e.message);
       }
     }
+    core.info(assignees.length.toString());
     core.info(assignees.toString());
     // if (assignees.length > 0) {
     //   core.info(assignees.toString());
