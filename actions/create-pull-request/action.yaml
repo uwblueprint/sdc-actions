@@ -16,12 +16,23 @@ inputs:
     description: Pull request body
     default: Automated PR by create-pull-request
     required: false
-  
+  assignees:
+    description: Comma separated list of assignees
+    required: false
+  reviewers:
+    description: Comma separated list of reviewers
+    required: false
+  team-reviewers:
+    description: Comma separated list of teams to review
+    required: false
+  draft:
+    description: Boolean to make pr a draft
+    required: false
 outputs:
   url:
     description: Pull request url
   id:
-   description: pull request id
+   description: Pull request id
 runs:
   using: node16
   main: dist/index.js
