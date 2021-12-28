@@ -24,6 +24,7 @@ const run = async () => {
     const draft = core.getInput("draft") === "true";
 
     // if pr already exists, we silently fail (last catch block)
+    core.info("Creating PR");
     const createPullRequestResponse = await octokit.rest.pulls.create({
       owner,
       repo,
@@ -76,6 +77,7 @@ const run = async () => {
 
     core.setOutput("url", createPullRequestResponse.data.url);
     core.setOutput("number", createPullRequestResponse.data.number);
+    core.info(`PR ${createPullRequestResponse.data.number} created`);
   } catch (e) {
     if (e.message.toLowerCase().includes("pull request already exists")) {
       core.info("Pull request already exists");
