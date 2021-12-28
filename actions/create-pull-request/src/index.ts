@@ -1,6 +1,7 @@
 import * as core from "@actions/core";
 import { context, getOctokit } from "@actions/github";
 
+const parseCommaList = (list: string) => list.split(",").filter((val) => val !== "");
 const run = async () => {
   try {
     // Create GitHub client with the API token.
@@ -11,9 +12,9 @@ const run = async () => {
     const destinationBranch = core.getInput("destination_branch", { required: true });
     const title = core.getInput("title");
     const body = core.getInput("body");
-    const assignees = core.getInput("assignees").split(",");
-    const reviewers = core.getInput("reviewers").split(",");
-    const teamReviewers = core.getInput("teamReviewers").split(",");
+    const assignees = parseCommaList(core.getInput("assignees"));
+    const reviewers = parseCommaList(core.getInput("reviewers"));
+    const teamReviewers = parseCommaList(core.getInput("teamReviewers"));
     const draft = core.getInput("draft") === "true";
 
     let createPullRequestResponse;

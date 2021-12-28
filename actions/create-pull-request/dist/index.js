@@ -37,6 +37,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
 const github_1 = __nccwpck_require__(5438);
+const parseCommaList = (list) => list.split(",").filter((val) => val !== "");
 const run = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // Create GitHub client with the API token.
@@ -46,9 +47,9 @@ const run = () => __awaiter(void 0, void 0, void 0, function* () {
         const destinationBranch = core.getInput("destination_branch", { required: true });
         const title = core.getInput("title");
         const body = core.getInput("body");
-        const assignees = core.getInput("assignees").split(",");
-        const reviewers = core.getInput("reviewers").split(",");
-        const teamReviewers = core.getInput("teamReviewers").split(",");
+        const assignees = parseCommaList(core.getInput("assignees"));
+        const reviewers = parseCommaList(core.getInput("reviewers"));
+        const teamReviewers = parseCommaList(core.getInput("teamReviewers"));
         const draft = core.getInput("draft") === "true";
         let createPullRequestResponse;
         try {
