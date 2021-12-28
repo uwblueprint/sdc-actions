@@ -2,6 +2,10 @@ name: Create Pull Request
 description: Github Action to create a pull request
 author: uwblueprint
 inputs:
+  token:
+    description: GitHub token for GitHub API requests. Users shouldn't need to set this themselves.
+    required: true
+    default: ${{ github.token }}
   source_branch: 
     description: Branch we want to merge into the destination (head)
     required: true
