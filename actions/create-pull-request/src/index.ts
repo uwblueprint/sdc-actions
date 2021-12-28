@@ -11,9 +11,9 @@ const run = async () => {
     const destinationBranch = core.getInput("destination_branch", { required: true });
     const title = core.getInput("title");
     const body = core.getInput("body");
-    const assignees = core.getInput("assignees");
-    const reviewers = core.getInput("reviewers");
-    const teamReviewers = core.getInput("teamReviewers");
+    const assignees = core.getInput("assignees").split(",");
+    const reviewers = core.getInput("reviewers").split(",");
+    const teamReviewers = core.getInput("teamReviewers").split(",");
     const draft = core.getInput("draft") === "true";
 
     const createPullRequestResponse = await octokit.rest.pulls.create({
@@ -26,16 +26,16 @@ const run = async () => {
       draft,
     });
 
-    if (assignees.length) {
-      core.info(assignees);
+    if (assignees.length > 0) {
+      core.info(assignees.toString());
     }
 
-    if (reviewers) {
-      core.info(reviewers);
+    if (reviewers.length >= 0) {
+      core.info(reviewers.toString());
     }
 
-    if (teamReviewers) {
-      core.info(teamReviewers);
+    if (teamReviewers.length >= 0) {
+      core.info(teamReviewers.toString());
     }
 
     core.setOutput("url", createPullRequestResponse.data.url);
