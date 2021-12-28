@@ -14,7 +14,7 @@ inputs:
     required: true
   title:
     description: Pull request title 
-    default: Automated PR ${{inputs.source_branch}} into ${{inputs.destination_branch}}
+    default: Automated PR
     required: false
   body:
     description: Pull request body
