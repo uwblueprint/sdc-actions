@@ -75,9 +75,9 @@ const run = async () => {
       });
     }
 
+    core.info(`PR ${createPullRequestResponse.data.number} created`);
     core.setOutput("url", createPullRequestResponse.data.url);
     core.setOutput("number", createPullRequestResponse.data.number);
-    core.info(`PR ${createPullRequestResponse.data.number} created`);
   } catch (e) {
     if (e.message.toLowerCase().includes("pull request already exists")) {
       core.info("Pull request already exists");

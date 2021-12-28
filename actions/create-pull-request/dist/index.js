@@ -95,9 +95,9 @@ const run = () => __awaiter(void 0, void 0, void 0, function* () {
             octokit.rest.pulls.requestReviewers(Object.assign({ owner,
                 repo, pull_number: createPullRequestResponse.data.number }, review));
         }
+        core.info(`PR ${createPullRequestResponse.data.number} created`);
         core.setOutput("url", createPullRequestResponse.data.url);
         core.setOutput("number", createPullRequestResponse.data.number);
-        core.info(`PR ${createPullRequestResponse.data.number} created`);
     }
     catch (e) {
         if (e.message.toLowerCase().includes("pull request already exists")) {
