@@ -27,6 +27,7 @@ inputs:
     required: false
   draft:
     description: Boolean to make pr a draft
+    default: 'false'
     required: false
 outputs:
   url:
