@@ -73,10 +73,10 @@ const run = () => __awaiter(void 0, void 0, void 0, function* () {
         if (assignees.length > 0) {
             core.info(assignees.toString());
         }
-        if (reviewers.length >= 0) {
+        if (reviewers.length > 0) {
             core.info(reviewers.toString());
         }
-        if (teamReviewers.length >= 0) {
+        if (teamReviewers.length > 0) {
             core.info(teamReviewers.toString());
         }
         core.setOutput("url", createPullRequestResponse === null || createPullRequestResponse === void 0 ? void 0 : createPullRequestResponse.data.url);

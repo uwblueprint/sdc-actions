@@ -39,11 +39,11 @@ const run = async () => {
       core.info(assignees.toString());
     }
 
-    if (reviewers.length >= 0) {
+    if (reviewers.length > 0) {
       core.info(reviewers.toString());
     }
 
-    if (teamReviewers.length >= 0) {
+    if (teamReviewers.length > 0) {
       core.info(teamReviewers.toString());
     }
 
