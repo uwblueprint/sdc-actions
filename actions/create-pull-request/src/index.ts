@@ -28,7 +28,9 @@ const run = async () => {
         draft,
       });
     } catch (e) {
-      if (!e.message.toLowerCase().includes("pull request already exists")) {
+      if (e.message.toLowerCase().includes("pull request already exists")) {
+        core.info("Pull request already exists");
+      } else {
         core.setFailed(e.message);
       }
     }

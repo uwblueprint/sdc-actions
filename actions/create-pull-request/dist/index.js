@@ -63,7 +63,10 @@ const run = () => __awaiter(void 0, void 0, void 0, function* () {
             });
         }
         catch (e) {
-            if (!e.message.toLowerCase().includes("pull request already exists")) {
+            if (e.message.toLowerCase().includes("pull request already exists")) {
+                core.info("Pull request already exists");
+            }
+            else {
                 core.setFailed(e.message);
             }
         }
