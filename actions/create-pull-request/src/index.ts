@@ -34,18 +34,18 @@ const run = async () => {
         core.setFailed(e.message);
       }
     }
+    core.info(assignees.toString());
+    // if (assignees.length > 0) {
+    //   core.info(assignees.toString());
+    // }
 
-    if (assignees.length > 0) {
-      core.info(assignees.toString());
-    }
+    // if (reviewers.length > 0) {
+    //   core.info(reviewers.toString());
+    // }
 
-    if (reviewers.length > 0) {
-      core.info(reviewers.toString());
-    }
-
-    if (teamReviewers.length > 0) {
-      core.info(teamReviewers.toString());
-    }
+    // if (teamReviewers.length > 0) {
+    //   core.info(teamReviewers.toString());
+    // }
 
     core.setOutput("url", createPullRequestResponse?.data.url);
     core.setOutput("id", createPullRequestResponse?.data.id);
