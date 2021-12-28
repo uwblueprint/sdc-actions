@@ -16,15 +16,22 @@ const run = async () => {
     const teamReviewers = core.getInput("teamReviewers").split(",");
     const draft = core.getInput("draft") === "true";
 
-    const createPullRequestResponse = await octokit.rest.pulls.create({
-      owner: context.repo.owner,
-      repo: context.repo.repo,
-      head: sourceBranch,
-      base: destinationBranch,
-      title,
-      body,
-      draft,
-    });
+    let createPullRequestResponse;
+    try {
+      createPullRequestResponse = await octokit.rest.pulls.create({
+        owner: context.repo.owner,
+        repo: context.repo.repo,
+        head: sourceBranch,
+        base: destinationBranch,
+        title,
+        body,
+        draft,
+      });
+    } catch (e) {
+      if (!e.message.toLowerCase().includes("pull request already exists")) {
+        core.setFailed(e.message);
+      }
+    }
 
     if (assignees.length > 0) {
       core.info(assignees.toString());
@@ -38,8 +45,8 @@ const run = async () => {
       core.info(teamReviewers.toString());
     }
 
-    core.setOutput("url", createPullRequestResponse.data.url);
-    core.setOutput("id", createPullRequestResponse.data.id);
+    core.setOutput("url", createPullRequestResponse?.data.url);
+    core.setOutput("id", createPullRequestResponse?.data.id);
   } catch (e) {
     core.setFailed(e.message);
   }

@@ -50,15 +50,23 @@ const run = () => __awaiter(void 0, void 0, void 0, function* () {
         const reviewers = core.getInput("reviewers").split(",");
         const teamReviewers = core.getInput("teamReviewers").split(",");
         const draft = core.getInput("draft") === "true";
-        const createPullRequestResponse = yield octokit.rest.pulls.create({
-            owner: github_1.context.repo.owner,
-            repo: github_1.context.repo.repo,
-            head: sourceBranch,
-            base: destinationBranch,
-            title,
-            body,
-            draft,
-        });
+        let createPullRequestResponse;
+        try {
+            createPullRequestResponse = yield octokit.rest.pulls.create({
+                owner: github_1.context.repo.owner,
+                repo: github_1.context.repo.repo,
+                head: sourceBranch,
+                base: destinationBranch,
+                title,
+                body,
+                draft,
+            });
+        }
+        catch (e) {
+            if (!e.message.toLowerCase().includes("pull request already exists")) {
+                core.setFailed(e.message);
+            }
+        }
         if (assignees.length > 0) {
             core.info(assignees.toString());
         }
@@ -68,8 +76,8 @@ const run = () => __awaiter(void 0, void 0, void 0, function* () {
         if (teamReviewers.length >= 0) {
             core.info(teamReviewers.toString());
         }
-        core.setOutput("url", createPullRequestResponse.data.url);
-        core.setOutput("id", createPullRequestResponse.data.id);
+        core.setOutput("url", createPullRequestResponse === null || createPullRequestResponse === void 0 ? void 0 : createPullRequestResponse.data.url);
+        core.setOutput("id", createPullRequestResponse === null || createPullRequestResponse === void 0 ? void 0 : createPullRequestResponse.data.id);
     }
     catch (e) {
         core.setFailed(e.message);
