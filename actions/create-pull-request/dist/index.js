@@ -42,51 +42,68 @@ const run = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // Create GitHub client with the API token.
         const octokit = (0, github_1.getOctokit)(core.getInput("token", { required: true }));
+        const { owner, repo } = github_1.context.repo;
         // inputs
-        const sourceBranch = core.getInput("source_branch", { required: true });
-        const destinationBranch = core.getInput("destination_branch", { required: true });
+        const head = core.getInput("source_branch", { required: true });
+        const base = core.getInput("destination_branch", { required: true });
         const title = core.getInput("title");
         const body = core.getInput("body");
+        const labels = parseCommaList(core.getInput("labels"));
         const assignees = parseCommaList(core.getInput("assignees"));
         const reviewers = parseCommaList(core.getInput("reviewers"));
         const teamReviewers = parseCommaList(core.getInput("teamReviewers"));
         const draft = core.getInput("draft") === "true";
-        let createPullRequestResponse;
-        try {
-            createPullRequestResponse = yield octokit.rest.pulls.create({
-                owner: github_1.context.repo.owner,
-                repo: github_1.context.repo.repo,
-                head: sourceBranch,
-                base: destinationBranch,
-                title,
-                body,
-                draft,
+        // if pr already exists, we silently fail (last catch block)
+        const createPullRequestResponse = yield octokit.rest.pulls.create({
+            owner,
+            repo,
+            head,
+            base,
+            title,
+            body,
+            draft,
+        });
+        if (assignees.length > 0) {
+            core.info(`Applying assignees ${assignees}`);
+            yield octokit.rest.issues.addAssignees({
+                owner,
+                repo,
+                assignees,
+                issue_number: createPullRequestResponse.data.number,
             });
         }
-        catch (e) {
-            if (e.message.toLowerCase().includes("pull request already exists")) {
-                core.info("Pull request already exists");
-            }
-            else {
-                core.setFailed(e.message);
-            }
+        if (labels.length > 0) {
+            core.info(`Applying labels ${labels}`);
+            yield octokit.rest.issues.addLabels({
+                owner,
+                repo,
+                issue_number: createPullRequestResponse.data.number,
+                labels,
+            });
         }
-        core.info(assignees.length.toString());
-        core.info(assignees.toString());
-        // if (assignees.length > 0) {
-        //   core.info(assignees.toString());
-        // }
-        // if (reviewers.length > 0) {
-        //   core.info(reviewers.toString());
-        // }
-        // if (teamReviewers.length > 0) {
-        //   core.info(teamReviewers.toString());
-        // }
-        core.setOutput("url", createPullRequestResponse === null || createPullRequestResponse === void 0 ? void 0 : createPullRequestResponse.data.url);
-        core.setOutput("id", createPullRequestResponse === null || createPullRequestResponse === void 0 ? void 0 : createPullRequestResponse.data.id);
+        const review = {};
+        if (reviewers.length > 0) {
+            core.info(`Requesting reviewers ${reviewers}`);
+            review.reviewers = reviewers;
+        }
+        if (teamReviewers.length > 0) {
+            core.info(`Requesting team reviewers ${teamReviewers}`);
+            review.team_reviewers = teamReviewers;
+        }
+        if (Object.keys(review).length > 0) {
+            octokit.rest.pulls.requestReviewers(Object.assign({ owner,
+                repo, pull_number: createPullRequestResponse.data.number }, review));
+        }
+        core.setOutput("url", createPullRequestResponse.data.url);
+        core.setOutput("number", createPullRequestResponse.data.number);
     }
     catch (e) {
-        core.setFailed(e.message);
+        if (e.message.toLowerCase().includes("pull request already exists")) {
+            core.info("Pull request already exists");
+        }
+        else {
+            core.setFailed(e.message);
+        }
     }
 });
 run();

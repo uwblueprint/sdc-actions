@@ -1,58 +1,87 @@
 import * as core from "@actions/core";
 import { context, getOctokit } from "@actions/github";
 
+interface Review {
+  [key: string]: string[];
+}
+
 const parseCommaList = (list: string) => list.split(",").filter((val) => val !== "");
 const run = async () => {
   try {
     // Create GitHub client with the API token.
     const octokit = getOctokit(core.getInput("token", { required: true }));
+    const { owner, repo } = context.repo;
 
     // inputs
-    const sourceBranch = core.getInput("source_branch", { required: true });
-    const destinationBranch = core.getInput("destination_branch", { required: true });
+    const head = core.getInput("source_branch", { required: true });
+    const base = core.getInput("destination_branch", { required: true });
     const title = core.getInput("title");
     const body = core.getInput("body");
+    const labels = parseCommaList(core.getInput("labels"));
     const assignees = parseCommaList(core.getInput("assignees"));
     const reviewers = parseCommaList(core.getInput("reviewers"));
     const teamReviewers = parseCommaList(core.getInput("teamReviewers"));
     const draft = core.getInput("draft") === "true";
 
-    let createPullRequestResponse;
-    try {
-      createPullRequestResponse = await octokit.rest.pulls.create({
-        owner: context.repo.owner,
-        repo: context.repo.repo,
-        head: sourceBranch,
-        base: destinationBranch,
-        title,
-        body,
-        draft,
+    // if pr already exists, we silently fail (last catch block)
+    const createPullRequestResponse = await octokit.rest.pulls.create({
+      owner,
+      repo,
+      head,
+      base,
+      title,
+      body,
+      draft,
+    });
+
+    if (assignees.length > 0) {
+      core.info(`Applying assignees ${assignees}`);
+      await octokit.rest.issues.addAssignees({
+        owner,
+        repo,
+        assignees,
+        issue_number: createPullRequestResponse.data.number,
       });
-    } catch (e) {
-      if (e.message.toLowerCase().includes("pull request already exists")) {
-        core.info("Pull request already exists");
-      } else {
-        core.setFailed(e.message);
-      }
     }
-    core.info(assignees.length.toString());
-    core.info(assignees.toString());
-    // if (assignees.length > 0) {
-    //   core.info(assignees.toString());
-    // }
 
-    // if (reviewers.length > 0) {
-    //   core.info(reviewers.toString());
-    // }
+    if (labels.length > 0) {
+      core.info(`Applying labels ${labels}`);
+      await octokit.rest.issues.addLabels({
+        owner,
+        repo,
+        issue_number: createPullRequestResponse.data.number,
+        labels,
+      });
+    }
 
-    // if (teamReviewers.length > 0) {
-    //   core.info(teamReviewers.toString());
-    // }
+    const review: Review = {};
+    if (reviewers.length > 0) {
+      core.info(`Requesting reviewers ${reviewers}`);
+      review.reviewers = reviewers;
+    }
 
-    core.setOutput("url", createPullRequestResponse?.data.url);
-    core.setOutput("id", createPullRequestResponse?.data.id);
+    if (teamReviewers.length > 0) {
+      core.info(`Requesting team reviewers ${teamReviewers}`);
+      review.team_reviewers = teamReviewers;
+    }
+
+    if (Object.keys(review).length > 0) {
+      octokit.rest.pulls.requestReviewers({
+        owner,
+        repo,
+        pull_number: createPullRequestResponse.data.number,
+        ...review,
+      });
+    }
+
+    core.setOutput("url", createPullRequestResponse.data.url);
+    core.setOutput("number", createPullRequestResponse.data.number);
   } catch (e) {
-    core.setFailed(e.message);
+    if (e.message.toLowerCase().includes("pull request already exists")) {
+      core.info("Pull request already exists");
+    } else {
+      core.setFailed(e.message);
+    }
   }
 };
 

@@ -20,6 +20,9 @@ inputs:
     description: Pull request body
     default: Automated PR by create-pull-request
     required: false
+  labels:
+    description: Comma separated list of labels
+    required: false 
   assignees:
     description: Comma separated list of assignees
     required: false
