@@ -1,0 +1,27 @@
+name: Create Pull Request
+description: Github Action to create a pull request
+author: uwblueprint
+inputs:
+  source_branch: 
+    description: Branch we want to merge into the destination (head)
+    required: true
+  destination_branch: 
+    description: Branch we want the source_branch to merge into
+    required: true
+  title:
+    description: Pull request title 
+    default: Automated PR ${{inputs.source_branch}} into ${{inputs.destination_branch}}
+    required: false
+  body:
+    description: Pull request body
+    default: Automated PR by create-pull-request
+    required: false
+  
+outputs:
+  url:
+    description: Pull request url
+  id:
+   description: pull request id
+runs:
+  using: node16
+  main: dist/index.js
