@@ -46,6 +46,7 @@ const run = () => __awaiter(void 0, void 0, void 0, function* () {
         const path = core.getInput("path", { required: true });
         const pkg = JSON.parse(fs_1.default.readFileSync(path, "utf-8"));
         const { version } = pkg;
+        core.info(version);
         core.setOutput("version", version);
     }
     catch (e) {

@@ -12,6 +12,7 @@ const run = async () => {
     const pkg: Package = JSON.parse(fs.readFileSync(path, "utf-8"));
     const { version } = pkg;
 
+    core.info(version);
     core.setOutput("version", version);
   } catch (e) {
     core.setFailed(e.message);
