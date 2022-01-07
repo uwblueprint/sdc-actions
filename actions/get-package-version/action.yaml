@@ -1,0 +1,14 @@
+name: Get Package Version
+description: Github Action to get package.json version 
+author: uwblueprint
+inputs:
+  path:
+    description: Path to package.json
+    required: true
+    default: ./package.json
+outputs:
+  version:
+    description: package.json version
+runs:
+  using: node16
+  main: dist/index.js
