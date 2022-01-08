@@ -6,11 +6,9 @@ inputs:
   branch:
     description: "Target branch to compare to"
     required: true
-    type: string
   regex:
     description: "Regex to compare to"
     required: true
-    type: string
 outputs:
   changed: 
     description: "Boolean if a changed file matches the regex"
