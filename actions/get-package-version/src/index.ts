@@ -2,6 +2,7 @@ import * as core from "@actions/core";
 import fs from "fs";
 
 interface Package {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any;
 }
 
