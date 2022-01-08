@@ -1,0 +1,120 @@
+name: Terraform Fmt Validate Plan Apply
+description: Runs terraform fmt, validate, plan, and apply
+inputs:
+  token:
+    description: GitHub token for GitHub API requests. Users shouldn't need to set this themselves.
+    required: true
+    default: ${{ github.token }}
+  checkout:
+    description: Boolean whether to checkout code. Default false
+    required: false
+    default: "false"
+  event: 
+    description: Github event name that triggered this action. Needed whether to update a pull request
+    required: true
+    default: ${{ github.event_name }}
+  directory:
+    description: Directory for main terraform file. Default ./
+    required: false
+    default: ./
+  fmt: 
+    description: Boolean whether to apply terraform fmt. Default true
+    required: true
+    default: "true"
+  validate: 
+    description: Boolean whether to apply terraform validate. Default true
+    required: true
+    default: "true"
+  plan: 
+    description: Boolean whether to apply terraform plan. Default true
+    required: true
+    default: "true"
+  apply: 
+    description: Boolean whether to apply terraform apply. Default false
+    required: true
+    default: "false"
+
+runs: 
+  using: "composite"
+  steps:
+    - name: Checkout commit
+      if: inputs.checkout == "true"
+      uses: actions/checkout@v2
+
+    - name: Hashicorp Terraform Setup (wraps stdout for plan)
+      if: inputs.plan == "true"
+      uses: hashicorp/setup-terraform@v1
+
+    - name: Terraform Init
+      shell: bash
+      run: |
+          cd ${{inputs.directory}}
+          terraform init
+
+    - name: Terraform Format
+      if: inputs.fmt == "true"
+      shell: bash
+      run: |
+          cd ${{inputs.directory}}
+          terraform fmt -check
+
+    - name: Terraform Validate
+      if: inputs.validate == "true"
+      shell: bash
+      run: |
+          cd ${{inputs.directory}} 
+          terraform validate -no-color
+
+    - name: Terraform Plan
+      if: inputs.plan == "true"
+      id: plan
+      shell: bash
+      run: |
+        cd ${{needs.ci-pr.outputs.env}}
+        terraform plan -no-color -out=tfplan
+
+    - name: Update Pull Request
+      if: inputs.plan == "true" && inputs.event == "pull_request"
+      uses: actions/github-script@0.9.0
+      env:
+          PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
+      with:
+          github-token: ${{ inputs.token }}
+          script: |
+              const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+              #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
+              #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
+              #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
+
+              <details><summary>Show Plan</summary>
+
+              \`\`\`\n
+              ${process.env.PLAN}
+              \`\`\`
+
+              </details>
+
+              *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
+
+              github.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: output
+              })
+            
+    - name: Terraform Apply plan output
+      if: inputs.apply == "true" && inputs.plan == "true"
+      shell: bash
+      run: |
+          cd ${{inputs.directory}}
+          terraform apply tfplan
+          exit 0
+
+    - name: Terraform Apply
+      if: inputs.apply == "true" && inputs.plan == "false"
+      shell: bash
+      run: |
+          cd ${{inputs.directory}}
+          terraform apply -auto-approve
+          exit 0
