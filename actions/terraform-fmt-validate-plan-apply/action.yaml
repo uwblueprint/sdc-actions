@@ -9,10 +9,6 @@ inputs:
     description: Boolean whether to checkout code. Default false
     required: false
     default: 'false'
-  event: 
-    description: Github event name that triggered this action. Needed whether to update a pull request
-    required: true
-    default: ${{ github.event_name }}
   directory:
     description: Directory for main terraform file. Default ./
     required: false
@@ -46,7 +42,7 @@ runs:
       uses: actions/checkout@v2
 
     - name: Hashicorp Terraform Setup (wraps stdout for plan)
-      if: inputs.plan == 'true' && inputs.event == 'pull_request'
+      if: inputs.plan == 'true' && github.event_name == 'pull_request'
       uses: hashicorp/setup-terraform@v1
 
     - name: Terraform Init
@@ -85,7 +81,7 @@ runs:
         terraform plan -no-color -out=tfplan
 
     - name: Update Pull Request
-      if: inputs.plan == 'true' && inputs.event == 'pull_request'
+      if: inputs.plan == 'true' && github.event_name == 'pull_request'
       uses: actions/github-script@0.9.0
       env:
           PLAN: terraform\n${{ steps.plan.outputs.stdout }}
