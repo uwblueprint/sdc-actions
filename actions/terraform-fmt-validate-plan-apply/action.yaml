@@ -49,41 +49,38 @@ runs:
       if: inputs.plan == 'true' && inputs.event == 'pull_request'
       uses: hashicorp/setup-terraform@v1
 
-    - name: test
-      shell: bash
-      run: |
-        pwd
-        echo ${{ github.event_name }}
-        echo ${{inputs.event}}
-      
     - name: Terraform Init
       id: init
       shell: bash
       run: |
-          cd ${{inputs.directory}}
-          terraform init
+        echo Init
+        cd ${{inputs.directory}}
+        terraform init
 
     - name: Terraform Format
       if: inputs.fmt == 'true'
       id: fmt
       shell: bash
       run: |
-          cd ${{inputs.directory}}
-          terraform fmt -check
+        echo Format
+        cd ${{inputs.directory}}
+        terraform fmt -check
 
     - name: Terraform Validate
       if: inputs.validate == 'true'
       id: validate
       shell: bash
       run: |
-          cd ${{inputs.directory}} 
-          terraform validate -no-color
+        echo Validate
+        cd ${{inputs.directory}} 
+        terraform validate -no-color
 
     - name: Terraform Plan
       if: inputs.plan == 'true'
       id: plan
       shell: bash
       run: |
+        echo Plan
         cd  ${{inputs.directory}} 
         terraform plan -no-color -out=tfplan
 
@@ -124,14 +121,16 @@ runs:
       if: inputs.apply == 'true' && inputs.plan == 'true'
       shell: bash
       run: |
-          cd ${{inputs.directory}}
-          terraform apply tfplan
-          exit 0
+        echo Apply
+        cd ${{inputs.directory}}
+        terraform apply tfplan
+        exit 0
 
     - name: Terraform Apply
       if: inputs.apply == 'true' && inputs.plan == 'false'
       shell: bash
       run: |
-          cd ${{inputs.directory}}
-          terraform apply -auto-approve
-          exit 0
+        echo Apply
+        cd ${{inputs.directory}}
+        terraform apply -auto-approve
+        exit 0
