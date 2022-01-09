@@ -1,5 +1,5 @@
 name: Terraform Fmt Validate Plan Apply
-description: Runs terraform fmt, validate, plan, and apply
+description: Runs terraform init, fmt, validate, plan, and apply
 inputs:
   token:
     description: GitHub token for GitHub API requests. Users shouldn't need to set this themselves.
