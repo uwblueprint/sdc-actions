@@ -17,7 +17,7 @@ inputs:
     description: Directory for main terraform file. Default ./
     required: false
     default: ./
-  name:
+  comment-title:
     description: Title text for PR comment. Can be used to differentiate comments
     default: ''
     required: false
@@ -57,6 +57,7 @@ runs:
         echo ${{inputs.event}}
       
     - name: Terraform Init
+      id: init
       shell: bash
       run: |
           cd ${{inputs.directory}}
@@ -64,6 +65,7 @@ runs:
 
     - name: Terraform Format
       if: inputs.fmt == 'true'
+      id: fmt
       shell: bash
       run: |
           cd ${{inputs.directory}}
@@ -71,6 +73,7 @@ runs:
 
     - name: Terraform Validate
       if: inputs.validate == 'true'
+      id: validate
       shell: bash
       run: |
           cd ${{inputs.directory}} 
@@ -92,11 +95,11 @@ runs:
       with:
           github-token: ${{ inputs.token }}
           script: |
-              const title = `${{inputs.name}}` === '' ? '' : `### ${{inputs.name}}
+              const title = `${{inputs.comment-title}}` === '' ? '' : `### ${{inputs.comment-title}}
               `;
 
-              const output = `${title}#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
-              #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
+              const output = `${title}#### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
+              #### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
               #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
               #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
 
